@@ -5,7 +5,7 @@ export LIBERO_HOME=${LIBERO_HOME:-/path/to/your/LIBERO}
 export LIBERO_CONFIG_PATH=${LIBERO_CONFIG_PATH:-${LIBERO_HOME}/libero}
 
 export PYTHONPATH=$PYTHONPATH:${LIBERO_HOME}
-export PYTHONPATH=${repo_root}:${PYTHONPATH}
+export PYTHONPATH=${repo_root}:${repo_root}/src:${PYTHONPATH}
 
 
 your_ckpt=${CKPT_PATH:-/path/to/your/Unifolm-VLA-Libero/checkpoints/pytorch_model.pt}
@@ -21,7 +21,7 @@ video_out_path="results/${task_suite_name}/${folder_name}/${step_name}"
 
 DEVICE=${DEVICE:-0}
 
-PYTHONPATH="${repo_root}:${LIBERO_HOME}:${PYTHONPATH}" CUDA_VISIBLE_DEVICES=${DEVICE} python "${repo_root}/experiments/LIBERO/eval_libero.py" \
+PYTHONPATH="${repo_root}:${repo_root}/src:${LIBERO_HOME}:${PYTHONPATH}" CUDA_VISIBLE_DEVICES=${DEVICE} python "${repo_root}/experiments/LIBERO/eval_libero.py" \
     --args.pretrained-path ${your_ckpt} \
     --args.vlm-pretrained-path ${vlm_pretrained_path} \
     --args.task-suite-name "$task_suite_name" \
