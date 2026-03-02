@@ -7,18 +7,21 @@ export NCCL_TIMEOUT=1000
 # model 
 # vlm model
 Framework_name=unifolm_vla
-base_vlm=/path/to/your/Unifolm-VLM-0
+base_vlm=${VLM:-/path/to/your/Unifolm-VLM-0}
 model_type=qwen2_5_vl
 freeze_module_list=''
 window_size=1
 # dataset
 # vla dataset
-oxe_data_root=/path/to/your/data
-data_mix=your_data_mix   # Unitree_all_task  g1_stack_block
+oxe_data_root=${OXE:-/path/to/your/data}
+data_mix=${DATA_MIX:-your_data_mix}   # Unitree_all_task  g1_stack_block
 
 # run save path
-run_root_dir=/path/to/your/run_root_dir
-run_id=your_run_id
+run_root_dir=${RUN_ROOT_DIR:-/path/to/your/run_root_dir}
+run_id=${RUN_ID:-your_run_id}
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd "${script_dir}/../.." && pwd)"
 
 output_dir=${run_root_dir}/${run_id}
 mkdir -p ${output_dir}
@@ -26,7 +29,7 @@ cp $0 ${output_dir}/
 
 
 accelerate launch \
-  --config_file src/unifolm_vla/config/deepseeds/deepspeed_zero2.yaml \
+  --config_file "${repo_root}/src/unifolm_vla/config/deepseeds/deepspeed_zero2.yaml" \
   --num_processes 8 \
   src/unifolm_vla/training/train_unifolm_vla.py \
   --config_yaml ./src/unifolm_vla/config/training/unifolm_vla_train.yaml \
@@ -50,5 +53,4 @@ accelerate launch \
   --run_id ${run_id} \
   --wandb_project vla_jiang \
   --wandb_entity zbdz 
-
 
