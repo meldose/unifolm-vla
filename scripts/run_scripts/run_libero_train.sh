@@ -1,3 +1,4 @@
+# NCCL settings for distributed training (adjust to your network)
 export NCCL_SOCKET_IFNAME=bond0
 export NCCL_IB_HCA=mlx5_2,mlx5_3
 export NCCL_BLOCKING_WAIT=1
@@ -5,29 +6,32 @@ export NCCL_ASYNC_ERROR_HANDLING=1
 export NCCL_TIMEOUT=1000  
 
 
-# model 
-# vlm model
+# Model configuration
+# VLM backbone
 Framework_name=unifolm_vla
 base_vlm=${VLM:-/path/to/your/Unifolm-VLM-0}
 model_type=qwen2_5_vl
 freeze_module_list='' 
 window_size=2
-# dataset
-# vla dataset
+# Dataset configuration
+# VLA dataset
 oxe_data_root=${OXE:-/path/to/your/data}
 data_mix=${DATA_MIX:-your_data_mix}   # libero_4_task_no_noops libero_90_no_noops
 
-# run save path
+# Run output path
 run_root_dir=${RUN_ROOT_DIR:-/path/to/your/run_root_dir}
 run_id=${RUN_ID:-your_run_id}
 
+# Resolve script directory and repository root (two levels up)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "${script_dir}/../.." && pwd)"
 
+# Create output folder and save a copy of this script for reproducibility
 output_dir=${run_root_dir}/${run_id}
 mkdir -p ${output_dir}
 cp $0 ${output_dir}/
 
+# Launch training with Hugging Face Accelerate + DeepSpeed
 accelerate launch \
   --config_file "${repo_root}/src/unifolm_vla/config/deepseeds/deepspeed_zero2.yaml" \
   --num_processes 8 \
@@ -53,5 +57,4 @@ accelerate launch \
   --run_id ${run_id} \
   --wandb_project vla_jiang \
   --wandb_entity zbdz 
-
 
